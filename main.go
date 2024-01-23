@@ -1,27 +1,22 @@
 package main
 
 import (
-	"net/http"
-	"fmt"
+	// "net/http"
+
+	"github.com/Hoan-K-Le/golang-gin-api-ecom/configs"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-gin-api-ecom/structure/cart"
-	"github.com/golang-gin-api-ecom/structure/user"
+
+	// "github.com/Hoan-K-Le/golang-gin-api-ecom/structure/cart"
+	// "github.com/Hoan-K-Le/golang-gin-api-ecom/structure/user"
+	"github.com/Hoan-K-Le/golang-gin-api-ecom/routes"
+
 )
 
 
 
 func main() {
-	cartItem := cart.CartItem{
-		ProductID: 123,
-		Quantity: 1,
-		Category: "Shirt"
-	}
-
-	user := user.User{
-		ID: 1,
-		Username: "test",
-		Password: "test",
-		Cart: []cart.CartItem{cartItem},
-	}
-	fmt.Printf("User: %+v\n",)
+	router := gin.Default();
+	configs.ConnectDB()
+	routes.UserRoute(router)
+	router.Run("localhost:8000")
 }
