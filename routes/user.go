@@ -1,8 +1,11 @@
 package routes
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	controller "github.com/Hoan-K-Le/golang-gin-api-ecom/controllers"
+	
+)
 
 func UserRoute(router *gin.Engine) {
-	router.GET("/", func (c *gin.Context) {
-		c.JSON(200, gin.H{"message": "User side"})
-	})
+	router.POST("/signup", controller.SignUp())
+	router.POST("/login", controller.Login())
 }
