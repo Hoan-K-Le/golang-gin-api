@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-lang-api-ecom/structure/cart"
-	"github.com/go-lang-api-ecom/structure/user"
+	"github.com/golang-gin-api-ecom/structure/cart"
+	"github.com/golang-gin-api-ecom/structure/user"
 )
 
 

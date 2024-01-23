@@ -1,4 +1,4 @@
-module github.com/Hoan-K-Le/go-lang-api-ecom
+module github.com/Hoan-K-Le/golang-gin-api-ecom
 
 go 1.21.6
 
