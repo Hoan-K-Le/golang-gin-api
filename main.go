@@ -1,6 +1,7 @@
 package main
 
 import (
+	  "github.com/gin-contrib/cors"
 	   "log"
     "os"
     "github.com/joho/godotenv"
@@ -19,15 +20,15 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	router := gin.Default();
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"POST", "GET"},
+		AllowHeaders:     []string{"Origin", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+}))
 	configs.ConnectDB()
 	routes.UserRoute(router)
 	router.Use(middleware.Authentication())
-
-	router.GET("/api-1", func(c *gin.Context) {
-		c.JSON(200, gin.H{"success": "Access granted for api-1"})
-	})
-    router.GET("/api-2", func(c *gin.Context) {
-        c.JSON(200, gin.H{"success": "Access granted for api-2"})
-    })
 	router.Run(":" + os.Getenv("PORT"))
 }
