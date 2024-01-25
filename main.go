@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	middleware "github.com/Hoan-K-Le/golang-gin-api-ecom/middleware"
 	"github.com/Hoan-K-Le/golang-gin-api-ecom/routes"
+	"github.com/Hoan-K-Le/golang-gin-api-ecom/seed"
 
 )
 
@@ -22,12 +23,14 @@ func main() {
 	router := gin.Default();
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowMethods:     []string{"POST", "GET"},
+		AllowMethods:     []string{"POST", "GET","PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 }))
+ client := configs.ConnectDB()
 	configs.ConnectDB()
+	seed.SeedProducts(client)
 	routes.UserRoute(router)
 	router.Use(middleware.Authentication())
 	router.Run(":" + os.Getenv("PORT"))
