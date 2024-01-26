@@ -97,7 +97,38 @@ func GetProducts(c *gin.Context)  {
 
 
 	}
+	
 // edit products
+func UpdateProduct(c *gin.Context) {
+	id := c.Param("id")
+	var ctx, cancel := context.WithTimeout(ctx, Background(), 100*time.Second)
+	defer cancel()
+
+	collection := configs.Client.Database("golangapi").Collection("products")
+	objectId,err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Invalid ID format"})
+		return
+	}
+	
+	var updatedProduct models.Product
+	if err := c.BindJSON(&updatedProduct); if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"Error": err.Error()})\
+		return
+	}
+	update := bson.M{"$set": bson.M{"name": updatedProduct.Name, "description":updatedProduct.Description, "quantity": updatedProduct.Quantity}}
+
+	result,err := collection.UpdateOne(ctx, bson.M{"_id": objectId}, update)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Can not update"})
+		return
+	}
+	 if result.ModifiedCount == 0 {
+        c.JSON(http.StatusNotFound, gin.H{"Error": "No product found with specified ID"})
+        return
+    }
+	c.JSON(http.StatusOK, gin.H{"Message": "Product updated successfully"})
+}
 
 // delete products
 func DeleteProduct(c *gin.Context) {
@@ -111,7 +142,8 @@ func DeleteProduct(c *gin.Context) {
        c.JSON(http.StatusBadRequest, gin.H{"Error": "Invalid ID format"})
        return
     }
-result, err := collection.DeleteOne(ctx, bson.D{{"_id",objectId}})
+	
+  result, err := collection.DeleteOne(ctx, bson.D{{"_id",objectId}})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
 		return
@@ -125,5 +157,31 @@ result, err := collection.DeleteOne(ctx, bson.D{{"_id",objectId}})
 	c.JSON(http.StatusOK, gin.H{"message": "Product deleted successfully"})
 }
 // filter products
+func SearchProducts(c *gin.Context) {
+	searchQuery := c.Query("query")
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+
+	collection := configs.Client.Database("golangapi").Collection("products")
+	filter := bson.M{"name": searchQuery}
+	var products []models.Product
+	cursor,err := collection.Find(ctx, filter)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var product models.Product
+		if err := cursor.Decode(&product); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		products = append(products,product)
+	}
+
+ c.JSON(http.StatusOK, products)
+}
 
 // add product to user's cart
