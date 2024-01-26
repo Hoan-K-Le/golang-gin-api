@@ -26,8 +26,8 @@ func AddProduct(c *gin.Context)  {
 		result, err := collection.InsertOne(ctx, product)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
-
 		fmt.Println(product)
 		c.JSON(http.StatusOK, gin.H{"result":result})
 	
@@ -38,6 +38,7 @@ func GetProducts(c *gin.Context)  {
 	
 		// initialize a slice
 		 var products []models.Product
+		
 
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
@@ -94,8 +95,6 @@ func GetProducts(c *gin.Context)  {
 		}
 
 		c.JSON(http.StatusOK, product)
-
-
 	}
 
 // edit products
@@ -163,7 +162,8 @@ func SearchProducts(c *gin.Context) {
 	defer cancel()
 
 	collection := configs.Client.Database("golangapi").Collection("products")
-	filter := bson.M{"name": searchQuery}
+  filter := bson.M{"name": bson.M{"$regex": primitive.Regex{Pattern: searchQuery, Options: "i"}}}
+
 	var products []models.Product
 	cursor,err := collection.Find(ctx, filter)
 	if err != nil {
@@ -171,7 +171,6 @@ func SearchProducts(c *gin.Context) {
 		return
 	}
 	defer cursor.Close(ctx)
-
 	for cursor.Next(ctx) {
 		var product models.Product
 		if err := cursor.Decode(&product); err != nil {
@@ -180,8 +179,6 @@ func SearchProducts(c *gin.Context) {
 		}
 		products = append(products,product)
 	}
-
- c.JSON(http.StatusOK, products)
+	c.JSON(200, products)
 }
-
 // add product to user's cart
