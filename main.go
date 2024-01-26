@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	middleware "github.com/Hoan-K-Le/golang-gin-api-ecom/middleware"
 	"github.com/Hoan-K-Le/golang-gin-api-ecom/routes"
-	"github.com/Hoan-K-Le/golang-gin-api-ecom/seed"
+
 
 )
 
@@ -27,11 +27,11 @@ func main() {
 		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-}))
- client := configs.ConnectDB()
-	configs.ConnectDB()
-	seed.SeedProducts(client)
+	}))
+	client := configs.ConnectDB()
+	SeedProducts(client)
 	routes.UserRoute(router)
+	routes.ProductRoute(router)
 	router.Use(middleware.Authentication())
 	router.Run(":" + os.Getenv("PORT"))
 }
