@@ -97,11 +97,11 @@ func GetProducts(c *gin.Context)  {
 
 
 	}
-	
+
 // edit products
 func UpdateProduct(c *gin.Context) {
 	id := c.Param("id")
-	var ctx, cancel := context.WithTimeout(ctx, Background(), 100*time.Second)
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 
 	collection := configs.Client.Database("golangapi").Collection("products")
@@ -112,11 +112,11 @@ func UpdateProduct(c *gin.Context) {
 	}
 	
 	var updatedProduct models.Product
-	if err := c.BindJSON(&updatedProduct); if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"Error": err.Error()})\
+	 if err := c.BindJSON(&updatedProduct); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"Error": err.Error()})
 		return
 	}
-	update := bson.M{"$set": bson.M{"name": updatedProduct.Name, "description":updatedProduct.Description, "quantity": updatedProduct.Quantity}}
+	update := bson.M{"$set": bson.M{"name": updatedProduct.Name, "description":updatedProduct.Description, "quantity": updatedProduct.Quantity},}
 
 	result,err := collection.UpdateOne(ctx, bson.M{"_id": objectId}, update)
 	if err != nil {
