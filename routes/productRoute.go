@@ -6,6 +6,8 @@ import (
 )
 
 func ProductRoute(router *gin.Engine) {
-	router.GET("/all",controller.GetProducts())
-	router.POST("/create", controller.AddProduct())
+	router.GET("/all",controller.GetProducts)
+	router.GET("/product/:id", controller.GetProductId)
+	router.POST("/create", controller.AddProduct)
+	router.DELETE("/product/:id", controller.DeleteProduct)
 }
