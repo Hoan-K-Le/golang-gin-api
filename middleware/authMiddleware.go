@@ -29,7 +29,7 @@ func Authentication() gin.HandlerFunc {
         c.Set("email", claims.Email)
         c.Set("username", claims.Username)
         c.Set("uid", claims.Uid)
-
+        
         c.Next()
 
     }

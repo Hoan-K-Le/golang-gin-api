@@ -10,7 +10,6 @@ import (
 
     "github.com/gin-gonic/gin"
     "github.com/go-playground/validator/v10"
-
     "github.com/Hoan-K-Le/golang-gin-api-ecom/configs"
 
     "github.com/Hoan-K-Le/golang-gin-api-ecom/models"
@@ -92,7 +91,7 @@ func SignUp() gin.HandlerFunc {
         }
         defer cancel()
 
-        c.JSON(http.StatusOK, resultInsertionNumber)
+        c.JSON(200, resultInsertionNumber)
 
     }
 }
@@ -103,7 +102,6 @@ func Login() gin.HandlerFunc {
         var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
         var user models.User
         var foundUser models.User
-
         if err := c.BindJSON(&user); err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
             return
@@ -122,12 +120,14 @@ func Login() gin.HandlerFunc {
             c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
             return
         }
+       
 
         token, refreshToken, _ := helper.GenerateAllTokens(*foundUser.Email, *foundUser.Username, foundUser.ID.Hex())
-
         helper.UpdateAllTokens(token, refreshToken, foundUser.ID.Hex())
+        c.SetCookie("auth_token", token, 3600, "/", "localhost", false, true)
 
-        c.JSON(http.StatusOK, foundUser)
+
+        c.JSON(http.StatusOK, gin.H{"token":token, "foundUser":foundUser})
 
     }
 }
