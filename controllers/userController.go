@@ -131,3 +131,20 @@ func Login() gin.HandlerFunc {
 
     }
 }
+
+func LogOut() gin.HandlerFunc{
+    return func(c *gin.Context) {
+
+        var _, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+        defer cancel()
+        
+        authToken, err := c.Cookie("auth_token")
+        if err != nil {
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
+            return
+        }
+        
+        c.SetCookie("auth_token","",-1,"/","localhost", false,true)
+        c.JSON(200, gin.H{"message":"Successfully logged out", "authToken": authToken})
+    }
+    }
